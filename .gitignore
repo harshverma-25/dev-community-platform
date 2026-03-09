@@ -9,8 +9,11 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+<<<<<<< HEAD
 node_modules
 **/node_modules
+=======
+>>>>>>> 41d63098523d865ecd9238549f81c44a517aa496
 
 # testing
 /coverage
