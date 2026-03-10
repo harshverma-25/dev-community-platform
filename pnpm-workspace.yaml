@@ -1,9 +1,3 @@
-<<<<<<< HEAD
 packages:
   - "apps/*"
   - "packages/*"
-=======
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
->>>>>>> 41d63098523d865ecd9238549f81c44a517aa496
