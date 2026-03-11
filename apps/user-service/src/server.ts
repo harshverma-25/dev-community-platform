@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { authenticate } from "./middleware/auth.middleware";
 
 dotenv.config();
 
@@ -17,6 +18,13 @@ app.get("/", (req, res) => {
 app.get("/users", (req, res) => {
   res.json({
     message: "Users endpoint working"
+  });
+});
+
+app.get("/users/me", authenticate, (req: any, res) => {
+  res.json({
+    message: "Authenticated user",
+    userId: req.userId
   });
 });
 
