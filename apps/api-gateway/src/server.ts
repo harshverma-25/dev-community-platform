@@ -17,6 +17,17 @@ app.use(
   })
 );
 
+app.use(
+  "/users",
+  createProxyMiddleware({
+    target: "http://localhost:4002",
+    changeOrigin: true,
+    pathRewrite: (path) => {
+      return "/users" + path
+    },
+  })
+);
+
 const PORT = 4000;
 
 app.listen(PORT, () => {
