@@ -28,12 +28,6 @@ app.get("/", (req, res) => {
   res.send("User Service Running");
 });
 
-app.get("/users/me", authenticate, (req: any, res) => {
-  res.json({
-    message: "Authenticated user",
-    userId: req.userId,
-  });
-});
 
 const PORT = process.env.PORT || 4002;
 
