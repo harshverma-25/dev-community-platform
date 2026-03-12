@@ -38,3 +38,29 @@ export const getMyProfile = async (req: any, res: Response) => {
     });
   }
 };
+
+export const updateProfile = async (req: any, res: Response) => {
+  try {
+    const { bio, techStack, avatar } = req.body;
+
+    const user = await User.findOneAndUpdate(
+      { authId: req.userId },
+      { bio, techStack, avatar },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        error: "Profile not found"
+      });
+    }
+
+    res.json(user);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Failed to update profile"
+    });
+  }
+};
