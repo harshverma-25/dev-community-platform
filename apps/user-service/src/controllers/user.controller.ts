@@ -124,3 +124,25 @@ export const unfollowUser = async (req: any, res: Response) => {
   }
 };
 
+export const getUserByUsername = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findOne({ username: req.params.username })
+      .populate("followers", "username")
+      .populate("following", "username");
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found"
+      });
+    }
+
+    res.json(user);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Failed to fetch user"
+    });
+  }
+};
+
