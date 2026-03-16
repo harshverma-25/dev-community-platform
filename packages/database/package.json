@@ -1,0 +1,20 @@
+{
+  "name": "@devcommunity/database",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/connect.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.30.3",
+  "dependencies": {
+    "mongoose": "^9.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  }
+}
