@@ -21,6 +21,16 @@ const postSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  comments: [
+  {
+    userId: String,
+    text: String,
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+],
 });
 
 export default mongoose.model("Post", postSchema);

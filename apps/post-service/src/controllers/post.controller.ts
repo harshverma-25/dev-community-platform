@@ -26,3 +26,60 @@ export const getPosts = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching posts" });
   }
 };
+
+export const toggleLike = async (
+  req: Request & { userId?: string },
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.userId;
+
+    const post = await Post.findById(id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const alreadyLiked = post.likes.includes(userId as string);
+
+    if (alreadyLiked) {
+      post.likes = post.likes.filter((uid) => uid !== userId);
+    } else {
+      post.likes.push(userId as string);
+    }
+
+    await post.save();
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ message: "Error toggling like" });
+  }
+};
+
+export const addComment = async (
+  req: Request & { userId?: string },
+  res: Response
+) => {
+  try {
+    const { id } = req.params;
+    const { text } = req.body;
+
+    const post = await Post.findById(id);
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    post.comments.push({
+      userId: req.userId,
+      text,
+    });
+
+    await post.save();
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding comment" });
+  }
+};
