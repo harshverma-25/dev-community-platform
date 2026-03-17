@@ -130,6 +130,15 @@ importers:
 
   apps/post-service:
     dependencies:
+      '@devcommunity/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@devcommunity/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@types/cors':
+        specifier: ^2.8.19
+        version: 2.8.19
       cors:
         specifier: ^2.8.6
         version: 2.8.6

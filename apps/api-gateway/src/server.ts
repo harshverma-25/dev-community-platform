@@ -28,6 +28,17 @@ app.use(
   })
 );
 
+app.use(
+  "/posts",
+  createProxyMiddleware({
+    target: "http://localhost:4003",
+    changeOrigin: true,
+    pathRewrite: (path) => {
+      return "/posts" + path
+    },
+  })
+);
+
 
 
 const PORT = 4000;
