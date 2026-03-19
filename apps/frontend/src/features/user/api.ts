@@ -13,3 +13,8 @@ export const createProfile = async (data: {
   const res = await api.post("/users/profile", data);
   return res.data;
 };
+
+export const getUserByUsername = async (username: string) => {
+  const res = await api.get(`/users/${username}`);
+  return res.data;
+};
