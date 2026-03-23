@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/src/features/auth/api";
 import { useAuthStore } from "@/src/features/auth/store";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type FormData = {
   email: string;
@@ -14,13 +15,30 @@ type FormData = {
 export default function LoginPage() {
   const { register, handleSubmit } = useForm<FormData>();
   const setToken = useAuthStore((state) => state.setToken);
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: (data) => {
-      setToken(data.token);
+
+    onSuccess: (data: any) => {
+      // 🔥 HANDLE ALL POSSIBLE RESPONSE FORMATS
+      const token =
+        data?.token || data?.data?.token || data?.accessToken;
+
+      console.log("LOGIN RESPONSE:", data);
+      console.log("EXTRACTED TOKEN:", token);
+
+      if (!token) {
+        toast.error("Token not found ❌");
+        return;
+      }
+
+      setToken(token); // ✅ store in localStorage
       toast.success("Login successful 🚀");
+
+      router.push("/"); // redirect
     },
+
     onError: () => {
       toast.error("Invalid credentials ❌");
     },

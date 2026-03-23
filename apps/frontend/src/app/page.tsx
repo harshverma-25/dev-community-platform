@@ -1,15 +1,24 @@
 "use client";
 
-import { useAuthGuard } from "@/src/hooks/useAuthGuard";
+import { useEffect } from "react";
+import { useAuthStore } from "@/src/features/auth/store";
 import { useGetMe } from "@/src/features/user/hooks";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useAuthGuard } from "@/src/hooks/useAuthGuard";
 
 export default function HomePage() {
   useAuthGuard();
 
   const { data, isLoading, isError } = useGetMe();
+  const setUser = useAuthStore((state) => state.setUser);
+
   const router = useRouter();
+
+  useEffect(() => {
+    if (data) {
+      setUser(data); // 🔥 VERY IMPORTANT
+    }
+  }, [data]);
 
   useEffect(() => {
     if (!isLoading && isError) {
