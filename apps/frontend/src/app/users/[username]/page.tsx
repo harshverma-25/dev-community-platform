@@ -1,39 +1,38 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useGetUser, useFollow, useUnfollow } from "@/src/features/user/hooks";
+import { useGetUser, useFollow, useGetMe, useUnfollow } from "@/src/features/user/hooks";
 import { useAuthStore } from "@/src/features/auth/store";
-import { useEffect } from "react";
 
 export default function UserProfilePage() {
   const params = useParams();
   const username = params.username as string;
 
   const { data, isLoading, refetch } = useGetUser(username);
+  const { data: me } = useGetMe();
   const currentUser = useAuthStore((state) => state.user);
+  const resolvedCurrentUser = me ?? currentUser;
 
-  const followMutation = useFollow();
-  const unfollowMutation = useUnfollow();
+  const followMutation = useFollow(username);
+  const unfollowMutation = useUnfollow(username);
 
-  // Debug logging
-  useEffect(() => {
-    if (data?.followers && currentUser) {
-      console.log("Followers:", data.followers);
-      console.log("Current user ID:", currentUser._id);
-      const following = data.followers.some((f: any) => {
-        const followerId = f._id ? String(f._id) : String(f);
-        return followerId === String(currentUser._id);
-      });
-      console.log("Is following:", following);
-    }
-  }, [data, currentUser]);
+  // Use backend profile identity (me) first, then fallback to auth store.
+  const isFollowing =
+    !!resolvedCurrentUser &&
+    Array.isArray(data?.followers) &&
+    data.followers.some((f: any) => {
+      if (typeof f === "string" || typeof f === "number") {
+        return String(f) === String(resolvedCurrentUser._id);
+      }
 
-  const isFollowing = !!currentUser && data?.followers?.some((f: any) => {
-    const followerId = f._id ? String(f._id) : String(f);
-    return followerId === String(currentUser._id);
-  });
+      if (f && (f._id || f.userId || f.id)) {
+        return String(f._id || f.userId || f.id) === String(resolvedCurrentUser._id);
+      }
 
-  const isOwnProfile = currentUser?._id === data?._id;
+      return false;
+    });
+
+  const isOwnProfile = resolvedCurrentUser?._id === data?._id;
 
   if (isLoading) return <p>Loading...</p>;
   if (!data) return <p>User not found</p>;

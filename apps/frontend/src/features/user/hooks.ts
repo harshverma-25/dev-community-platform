@@ -21,24 +21,24 @@ export const useGetUser = (username: string) => {
 
 
 
-export const useFollow = () => {
+export const useFollow = (username: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: followUser,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user", username] });
     },
   });
 };
 
-export const useUnfollow = () => {
+export const useUnfollow = (username: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: unfollowUser,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user", username] });
     },
   });
 };
