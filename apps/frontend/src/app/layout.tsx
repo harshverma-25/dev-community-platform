@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/src/providers/query-provider";
 import { Toaster } from "react-hot-toast";
+import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,10 +27,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="dark">
+      <body className={`${geistSans.variable} ${geistMono.variable} min-h-screen`}>
         <QueryProvider>
-          {children}
+          <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-950 to-slate-900 text-slate-100">
+            <div className="fixed inset-0 -z-10 overflow-hidden">
+              <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-violet-500/10 blur-3xl" />
+              <div className="absolute bottom-[-180px] right-[-180px] h-[520px] w-[520px] rounded-full bg-cyan-500/10 blur-3xl" />
+              <div className="absolute top-[20%] left-[-180px] h-[420px] w-[420px] rounded-full bg-fuchsia-500/10 blur-3xl" />
+            </div>
+
+            <Navbar />
+            <Sidebar />
+
+            <main className="pt-16 md:pl-64">
+              <div className="mx-auto w-full max-w-6xl px-4 py-6">
+                {children}
+              </div>
+            </main>
+          </div>
           <Toaster />
         </QueryProvider>
       </body>

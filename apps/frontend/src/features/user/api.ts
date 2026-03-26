@@ -28,3 +28,4 @@ export const unfollowUser = async (userId: string) => {
   const res = await api.post(`/users/unfollow/${userId}`);
   return res.data;
 };
+

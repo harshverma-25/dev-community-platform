@@ -5,6 +5,9 @@ import { useMutation } from "@tanstack/react-query";
 import { signupUser } from "@/src/features/auth/api";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type FormData = {
   name: string;
@@ -32,35 +35,37 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="flex min-h-[calc(100vh-6rem)] items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 p-6 border rounded-xl w-80"
+        className="flex w-full max-w-sm flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
       >
-        <h2 className="text-xl font-bold">Signup</h2>
+        <h2 className="text-xl font-semibold text-white">Signup</h2>
 
-        <input
+        <Input
           {...register("name")}
           placeholder="Name"
-          className="border p-2 rounded"
         />
 
-        <input
+        <Input
           {...register("email")}
           placeholder="Email"
-          className="border p-2 rounded"
         />
 
-        <input
+        <Input
           {...register("password")}
           type="password"
           placeholder="Password"
-          className="border p-2 rounded"
         />
 
-        <button className="bg-black text-white p-2 rounded">
-          Signup
-        </button>
+        <Button type="submit">Signup</Button>
+
+        <p className="text-center text-xs text-white/60">
+          Already have an account?{" "}
+          <Link href="/login" className="text-white underline underline-offset-4">
+            Login
+          </Link>
+        </p>
       </form>
     </div>
   );
