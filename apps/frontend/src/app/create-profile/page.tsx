@@ -6,8 +6,8 @@ import { createProfile } from "@/src/features/user/api";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useAuthGuard } from "@/src/hooks/useAuthGuard";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Button } from "@/src/components/ui/button";
 
 type FormData = {
   username: string;

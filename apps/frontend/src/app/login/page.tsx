@@ -7,8 +7,8 @@ import { useAuthStore } from "@/src/features/auth/store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
 
 type FormData = {
   email: string;

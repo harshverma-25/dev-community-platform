@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 import { useCreatePost } from "@/src/features/post/hooks";
 import { useAuthGuard } from "@/src/hooks/useAuthGuard";
 

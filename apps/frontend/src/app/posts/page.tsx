@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { MessageSquare, UserRound } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/src/components/ui/button";
 import { useGetPosts } from "@/src/features/post/hooks";
 
 type Post = {
