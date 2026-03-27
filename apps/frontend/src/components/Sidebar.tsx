@@ -2,156 +2,127 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  House,
+  Home,
   Newspaper,
-  PlusCircle,
-  Sparkles,
+  PlusSquare,
+  UserCircle2,
   Bot,
-  LayoutDashboard,
-  Calendar,
-  BarChart3,
-  Users,
-  GraduationCap,
-  FileText,
-  MessageSquare,
-  DollarSign,
-  FolderOpen,
-  HelpCircle,
-  Settings,
-  LogOut,
-  ChevronRight,
-  Zap,
-  TrendingUp,
-  Code2,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/src/features/auth/store";
 
-// Define the navigation structure based on the screenshot
-type NavSection = {
-  title: string;
-  items: NavItem[];
-  icon?: React.ComponentType<{ className?: string }>;
-};
-
 type NavItem = {
   href: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ElementType;
   highlight?: boolean;
-  badge?: string;
-  badgeColor?: string;
 };
 
+type NavSection = {
+  title: string;
+  items: NavItem[];
+};
 
-// Additional developer-specific items for Dev Circle
-const devSpecificItems: NavItem[] = [
-  { href: "/posts", label: "Developers post", icon: Newspaper },
-  { href: "/new-post", label: "New Post", icon: PlusCircle, highlight: true },
-  { href: "/ai-resume", label: "AI Resume", icon: Bot },
+const navigation: NavSection[] = [
+  {
+    title: "Main",
+    items: [
+      { href: "/", label: "Home", icon: Home },
+      { href: "/posts", label: "Developers post", icon: Newspaper },
+    ],
+  },
+  {
+    title: "Create",
+    items: [
+      { href: "/new-post", label: "New Post", icon: PlusSquare, highlight: true },
+    ],
+  },
+  {
+    title: "Account",
+    items: [
+      { href: "/create-profile", label: "Create Profile", icon: UserCircle2 },
+    ],
+  },
+  {
+    title: "Tools",
+    items: [
+      { href: "/ai-resume", label: "AI Resume Builder", icon: Bot },
+    ],
+  },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [collapsedSections, setCollapsedSections] = useState<string[]>([]);
   const token = useAuthStore((state) => state.token);
   const isLoggedIn = Boolean(token);
 
-  const toggleSection = (sectionTitle: string) => {
-    setCollapsedSections(prev =>
-      prev.includes(sectionTitle)
-        ? prev.filter(s => s !== sectionTitle)
-        : [...prev, sectionTitle]
-    );
-  };
-
   return (
-    <>
-      {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-16 z-40 hidden h-[calc(100vh-4rem)] w-72 lg:block">
-        <div className="relative h-full">
-          {/* Background Effects */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/30 to-slate-950/50 backdrop-blur-xl" />
-          <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-violet-500/20 to-transparent" />
+    <aside className="h-full w-full rounded-[2rem] bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200 dark:border-white/10 shadow-sm flex flex-col overflow-hidden">
+      
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div className="p-4 sm:p-5 space-y-6 md:space-y-8">
           
-          <div className="relative flex h-full flex-col overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-            <div className="flex-1 space-y-6 p-4">
-              {/* Developer Quick Actions */}
-              <div className="mb-2 flex items-center gap-2 rounded-lg bg-gradient-to-r from-violet-500/10 to-cyan-500/10 p-3 border border-violet-500/20">
-                <Code2 className="size-5 text-violet-400" />
-                <div className="flex-1">
-                  <p className="text-xs font-medium text-white/80">Dev Circle Pro</p>
-                  <p className="text-[10px] text-white/40">Unlock premium features</p>
-                </div>
-                <button className="rounded-full bg-white/10 px-2 py-1 text-[10px] font-medium text-white/70 hover:bg-white/20 transition-all">
-                  Upgrade
-                </button>
-              </div>
+          {navigation.map((section) => (
+            <div key={section.title} className="flex flex-col gap-2">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 pl-3">
+                {section.title}
+              </h3>
+              <div className="flex flex-col gap-1">
+                {section.items.map((item) => {
+                  const isActive = pathname === item.href;
+                  const Icon = item.icon;
 
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "group relative flex items-center gap-3.5 rounded-2xl px-3 py-2.5 transition-all duration-300 font-medium",
+                        isActive
+                          ? "bg-slate-900 dark:bg-slate-800 text-white shadow-md shadow-slate-900/10"
+                          : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white"
+                      )}
+                    >
+                      {/* Highlighted item special style */}
+                      {item.highlight && !isActive && (
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-violet-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      )}
 
-              {/* Developer Specific Section */}
-              <div className="pt-4">
-                <div className="mb-2 px-3 py-1.5">
-                  <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                </div>
-                <div className="space-y-1">
-                  {devSpecificItems.map((item) => {
-                    const active = pathname === item.href;
-                    const Icon = item.icon;
-
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
+                      <div
                         className={cn(
-                          "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
-                          "text-white/70 hover:text-white hover:bg-white/8",
-                          active && "bg-white/10 text-white ring-1 ring-white/10",
-                          item.highlight &&
-                            "bg-gradient-to-r from-violet-500/20 to-cyan-400/15 text-white ring-1 ring-violet-500/25"
+                          "flex size-8 items-center justify-center rounded-xl transition-all duration-300 relative z-10",
+                          isActive
+                            ? "bg-white/20 text-white"
+                            : item.highlight
+                            ? "bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 group-hover:bg-violet-200 dark:group-hover:bg-violet-500/30"
+                            : "bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-hover:bg-white dark:group-hover:bg-white/10 group-hover:text-slate-900 dark:group-hover:text-white"
                         )}
                       >
-                        <span
-                          className={cn(
-                            "flex size-7 items-center justify-center rounded-md ring-1 ring-white/10 transition-all duration-200",
-                            item.highlight
-                              ? "bg-white/8 group-hover:bg-white/10"
-                              : "bg-white/5 group-hover:bg-white/8"
-                          )}
-                        >
-                          <Icon className="size-4" />
-                        </span>
-                        <span className="truncate">{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* AI Tip Section */}
-              <div className="mt-auto pt-4">
-                <div className="rounded-xl bg-gradient-to-br from-violet-500/10 to-cyan-500/10 border border-violet-500/20 p-3 backdrop-blur-sm">
-                  <div className="flex items-start gap-2">
-                    <Sparkles className="size-4 text-violet-400 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-xs font-medium text-white/80">AI Tip</p>
-                      <p className="text-[11px] text-white/40 leading-relaxed">
-                        Start by creating a post to kick off the feed and get AI-powered suggestions
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                        <Icon className={cn("size-[18px]", isActive && "stroke-[2.5px]")} />
+                      </div>
+                      
+                      <span className="text-[14px] truncate relative z-10">{item.label}</span>
+                      
+                      {/* Active indicator dot */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="sidebar-active"
+                          className="absolute right-3 size-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]"
+                        />
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
-          </div>
-        </div>
-      </aside>
+          ))}
 
-      {/* Mobile Sidebar Drawer - You can implement this later if needed */}
-    </>
+        </div>
+      </div>
+    </aside>
   );
 }

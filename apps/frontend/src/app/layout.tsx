@@ -67,14 +67,23 @@ export default function RootLayout({
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
             </div>
 
-            <Navbar />
-            <Sidebar />
-
-            <main className="pt-16 md:pl-64 transition-all duration-300">
-              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6 md:py-8">
-                {children}
+            <div className="flex h-screen w-full overflow-hidden p-3 sm:p-4 gap-3 sm:gap-4 relative z-10">
+              {/* Sidebar Container */}
+              <div className="hidden lg:block w-[280px] h-full flex-shrink-0">
+                <Sidebar />
               </div>
-            </main>
+
+              {/* Main Content Area */}
+              <div className="flex flex-col flex-1 min-w-0 h-full gap-3 sm:gap-4">
+                <Navbar />
+                
+                <main className="flex-1 overflow-y-auto bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-[2rem] shadow-2xl relative">
+                  <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6 md:py-8 h-full">
+                    {children}
+                  </div>
+                </main>
+              </div>
+            </div>
           </div>
           <Toaster 
             position="top-right"

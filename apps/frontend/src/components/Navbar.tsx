@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Search, Code2, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Bell, Search, Code2, Sparkles, PlusCircle, ChevronDown, User, LogOut, Settings } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/src/components/ui/button";
@@ -11,158 +11,199 @@ import { useAuthStore } from "@/src/features/auth/store";
 
 export default function Navbar() {
   const token = useAuthStore((state) => state.token);
+  const logout = useAuthStore((state) => state.logout);
   const isLoggedIn = Boolean(token);
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 h-[60px] md:h-[64px]">
+    <header className="relative w-full h-[60px] flex-shrink-0 z-50">
       <motion.div 
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-        className="h-full border-b border-white/[0.08] bg-slate-950/80 backdrop-blur-xl supports-[backdrop-filter]:bg-slate-950/60"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="h-full w-full rounded-[2rem] bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-between px-4 sm:px-6 md:px-8"
       >
-        <div className="mx-auto flex h-full w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-          {/* Logo Section */}
-          <div className="flex min-w-0 items-center gap-3">
-            <Link href="/" className="group relative inline-flex items-center gap-2">
-              <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-violet-500/20 to-cyan-500/20 opacity-0 blur-lg transition-all duration-500 group-hover:opacity-100" />
-              <Code2 className="size-5 text-violet-400 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" />
-              <span className="text-lg font-display font-bold tracking-tight bg-gradient-to-r from-violet-200 via-white to-cyan-200 bg-clip-text text-transparent">
+        {/* Left: Logo */}
+        <div className="flex items-center w-1/4">
+          <Link href="/" className="group relative inline-flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded-lg">
+            <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 shadow-md shadow-violet-500/20 transition-transform duration-300 group-hover:scale-105">
+              <Code2 className="size-5 text-white" strokeWidth={2.5} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-lg font-display font-bold tracking-tight text-slate-900 dark:text-white leading-none">
                 DevCircle
               </span>
-              <span className="hidden rounded-full bg-white/8 px-2 py-0.5 text-[10px] font-medium text-white/60 ring-1 ring-white/10 sm:inline-flex items-center gap-1">
-                <Sparkles className="size-2.5" />
-                beta
+              <span className="flex items-center gap-1 text-[10px] font-medium text-slate-500 dark:text-white/50 uppercase tracking-widest mt-1">
+                <Sparkles className="size-2.5 text-amber-500" />
+                Beta
               </span>
-            </Link>
-          </div>
+            </div>
+          </Link>
+        </div>
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden flex-1 items-center justify-center md:flex">
-            <div className="relative w-full max-w-xl">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-white/40 transition-colors duration-200" />
-              <Input
-                placeholder="Search developers, posts, tags..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 rounded-full bg-white/5 border-white/10 pl-10 pr-4 text-white placeholder:text-white/40 focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 transition-all duration-200"
-                aria-label="Search"
-              />
-              <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-r from-violet-500/20 to-cyan-500/20 opacity-0 blur-xl transition-opacity duration-300 group-focus-within:opacity-100" />
-              {searchQuery && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/40">
-                  <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono">⌘K</kbd>
-                </div>
-              )}
+        {/* Center: Search */}
+        <div className="hidden md:flex flex-1 max-w-2xl justify-center items-center px-4">
+          <div className="relative w-full group">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+              <Search className="size-5 text-slate-400 group-focus-within:text-violet-500 transition-colors duration-200" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search users, posts, and tags..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-10 w-full rounded-full bg-slate-100/80 dark:bg-white/5 border border-transparent 
+                pl-12 pr-12 text-[15px] font-medium text-slate-900 dark:text-white 
+                placeholder:text-slate-400 dark:placeholder:text-white/40 outline-none
+                focus:bg-white dark:focus:bg-slate-800 focus:border-violet-500/30 focus:ring-4 focus:ring-violet-500/10 
+                transition-all duration-300 shadow-inner"
+            />
+            <div className="absolute inset-y-0 right-4 flex items-center">
+              <kbd className="hidden lg:inline-flex items-center justify-center h-6 px-2 rounded-md bg-slate-200 dark:bg-white/10 text-[11px] font-mono font-medium text-slate-500 dark:text-white/50 border border-slate-300 dark:border-white/10">
+                ⌘K
+              </kbd>
             </div>
           </div>
+        </div>
 
-          {/* Right Section */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            {/* Mobile Search Button */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="relative md:hidden transition-all duration-200 hover:scale-105 hover:bg-white/10"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              aria-label="Search"
-            >
-              <Search className="size-4" />
-            </Button>
+        {/* Right: Actions */}
+        <div className="flex items-center justify-end gap-3 sm:gap-4 w-1/4">
+          {/* Mobile Search Toggle */}
+          <button
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className="md:hidden flex size-10 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors"
+          >
+            <Search className="size-5" />
+          </button>
 
-            {!isLoggedIn ? (
-              <div className="flex items-center gap-2">
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="relative transition-all duration-200 hover:scale-105 hover:bg-white/10"
+          {!isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              <Link href="/login" className="hidden sm:block text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+                Login
+              </Link>
+              <Link href="/signup" className="flex items-center justify-center h-10 px-5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-semibold hover:scale-105 active:scale-95 transition-transform shadow-md">
+                Sign Up
+              </Link>
+            </div>
+          ) : (
+            <>
+              {/* Important: New Post Button */}
+              <Link 
+                href="/new-post"
+                className="hidden sm:flex items-center gap-2 h-10 px-4 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold shadow-md shadow-violet-500/20 hover:shadow-violet-500/40 hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <PlusCircle className="size-4" />
+                <span>Create Post</span>
+              </Link>
+
+              {/* Important: Notifications */}
+              <button className="relative flex size-10 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors group">
+                <Bell className="size-5 group-hover:animate-[wiggle_1s_ease-in-out_infinite]" />
+                <span className="absolute top-2 right-2.5 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+              </button>
+
+              {/* Vertical Divider */}
+              <div className="hidden sm:block w-px h-8 bg-slate-200 dark:bg-white/10" />
+
+              {/* Profile Dropdown */}
+              <div className="relative" ref={profileRef}>
+                <button 
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-3 p-1 pr-3 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors focus-visible:ring-2 focus-visible:ring-violet-500 outline-none"
                 >
-                  <Link href="/login">Login</Link>
-                </Button>
-                <Button
-                  asChild
-                  className="relative overflow-hidden bg-gradient-to-r from-violet-500 to-cyan-500 text-white shadow-lg shadow-violet-500/25 transition-all duration-200 hover:scale-105 hover:shadow-violet-500/40"
-                >
-                  <Link href="/signup">
-                    <span className="relative z-10">Signup</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-cyan-600 opacity-0 transition-opacity duration-300 hover:opacity-100" />
-                  </Link>
-                </Button>
+                  <div className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white font-bold text-xs shadow-inner">
+                    HV
+                  </div>
+                  <div className="hidden lg:flex flex-col items-start pr-1">
+                    <span className="text-[13px] font-semibold text-slate-900 dark:text-white leading-tight">Harsh Verma</span>
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-white/50 leading-tight">Full Stack Developer</span>
+                  </div>
+                  <ChevronDown className="size-4 text-slate-400 hidden sm:block" />
+                </button>
+
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-3 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xl overflow-hidden z-50 p-2 py-2"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <Link href="/create-profile" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+                          <User className="size-4 text-slate-400" />
+                          Create Profile
+                        </Link>
+                        <Link href="/posts" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">
+                          <Settings className="size-4 text-slate-400" />
+                          Posts
+                        </Link>
+                        <div className="h-px w-full bg-slate-100 dark:bg-white/10 my-1" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            logout();
+                            setIsProfileOpen(false);
+                          }}
+                          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                        >
+                          <LogOut className="size-4" />
+                          Log Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
-            ) : (
-              <div className="flex items-center gap-1 sm:gap-2">
-                {/* Notification Button */}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="relative transition-all duration-200 hover:scale-105 hover:bg-white/10"
-                  aria-label="Notifications"
-                >
-                  <Bell className="size-4" />
-                  <motion.span 
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute right-1.5 top-1.5 size-2 rounded-full bg-cyan-400 shadow-[0_0_0_2px_rgba(6,182,212,0.2)]"
-                  />
-                </Button>
-
-                {/* User Avatar */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  className="group relative inline-flex size-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500/20 to-cyan-500/20 ring-1 ring-white/20 backdrop-blur-sm transition-all duration-200 hover:ring-violet-500/50"
-                  aria-label="User menu"
-                >
-                  <span className="text-xs font-semibold font-display bg-gradient-to-br from-violet-200 to-cyan-200 bg-clip-text text-transparent">
-                    DC
-                  </span>
-                  <span className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-500/10 to-cyan-500/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                </motion.button>
-              </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </motion.div>
 
-      {/* Mobile Search Modal */}
+      {/* Mobile Search Overlay */}
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute left-0 right-0 top-full mt-2 px-4 md:hidden"
+            className="absolute left-0 right-0 top-full mt-2 md:hidden z-40 rounded-[2rem] overflow-hidden"
           >
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-white/40" />
-              <Input
-                placeholder="Search developers, posts, tags..."
+            <div className="relative p-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl shadow-lg">
+              <Search className="absolute left-6 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search resources..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-11 w-full rounded-xl bg-slate-900/95 border-white/10 pl-10 pr-4 text-white placeholder:text-white/40 backdrop-blur-xl focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20"
+                className="h-12 w-full rounded-full bg-slate-100 dark:bg-white/5 border-transparent pl-14 pr-4 text-[15px] font-medium text-slate-900 dark:text-white outline-none"
                 autoFocus
-                aria-label="Search"
               />
-              <button
-                onClick={() => setIsSearchOpen(false)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/40 hover:text-white/60"
-              >
-                Esc
-              </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Keyboard Shortcut Hint */}
-      <div className="hidden md:block absolute -bottom-8 left-1/2 -translate-x-1/2 text-[10px] text-white/20 font-mono">
-        press <kbd className="px-1 rounded bg-white/5">⌘</kbd> + <kbd className="px-1 rounded bg-white/5">K</kbd> to search
-      </div>
     </header>
   );
 }
